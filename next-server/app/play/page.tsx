@@ -1,8 +1,10 @@
-import Piece from "@/ui/Chessboard/components/Pieces";
+import Game from "@/ui/game";
+
 
 const Page = () => {
+
   return (
-    <Piece />
+    <Game />
   );
 };
 
