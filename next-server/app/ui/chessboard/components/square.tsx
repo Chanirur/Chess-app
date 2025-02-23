@@ -1,5 +1,5 @@
 import { SquareObjType } from "@/models";
-import Piece from "@/ui/Chessboard/components/pieces";
+import Piece from "./pieces";
 
 
 interface Props {

@@ -1,11 +1,9 @@
-import Game from "@/ui/game";
-
+import Game from "@/app/ui/game"
 
 const Page = () => {
-
-  return (
-    <Game />
-  );
-};
+    return (
+        <Game />
+    )
+}
 
 export default Page;

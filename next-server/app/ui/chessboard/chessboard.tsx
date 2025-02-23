@@ -3,7 +3,7 @@
 import { SquareObjType } from '@/models';
 import Square from './components/square';
 
-
+import './chessboard.module.css';
 
 
 interface Props {
