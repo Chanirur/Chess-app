@@ -1,0 +1,5 @@
+next-server/node_modules
+next-server/.env
+
+rest-api/node_modules
+rest-api/.env
