@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:16
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: chessuser
+      POSTGRES_PASSWORD: chesspassword
+      POSTGRES_DB: chessapp
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+
+  api:
+    build: ./rest-api
+    container_name: chess_api
+    restart: always
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgres://chessuser:chesspassword@db:5432/chessapp
+    ports:
+      - "5000:5000"
+
+volumes:
+  pgdata:
