@@ -6,7 +6,7 @@ dotenv.config();
 
 const app = express();
 
-app.use(express.json()); // Middleware to parse JSON
-app.use("/auth", authRoutes); // Use auth routes
+app.use(express.json());
+app.use("/auth", authRoutes);
 
 export default app;

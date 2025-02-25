@@ -1,4 +1,4 @@
-import Game from "@/app/ui/game"
+import Game from "@/app/ui/chessboard/game"
 
 const Page = () => {
     return (
