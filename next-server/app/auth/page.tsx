@@ -9,7 +9,7 @@ import { motion } from "framer-motion";
 
 
 export default function AuthScreen() {
-	const [mode, setMode] = useState<'login' | 'register' | 'resetPassword'>('login');
+	const [mode, setMode] = useState<'login' | 'register' | 'resetPassword' | 'emailVerification'>('login');
 
 	const changeMode = (mode: 'login' | 'register' | 'resetPassword' | 'emailVerification') => {
 		setMode(mode);
@@ -25,11 +25,11 @@ export default function AuthScreen() {
 					alt="Auth Background"
 					fill={true}
 					priority
-					style={{ objectFit: "cover" }}
+					style={{ objectFit: 'cover' }}
 					className="-z-10 rounded-[50px] hidden md:block"
 				/>
 
-				<motion.div id="mainForm" className="relative md:absolute w-[100%] md:w-[50%] h-[70vh] md:h-full bg-[linear-gradient(135deg,#00A000FF,#D0FA77e6)] rounded-[50px] z-40 flex flex-col items-center justify-center"
+				<motion.div id="mainForm" className="relative md:absolute w-[100%] md:w-[50%] h-[70vh] md:h-full rounded-[50px] bg-[linear-gradient(135deg,#00A000FF,#D0FA77e6)] z-40 flex flex-col items-center justify-center"
 					animate={{ x: mode==='login' ? "0%" : "100%" }}
 					transition={{ duration: 0.5 }}>
 					<div className="w-[60%] h-full grid justify-center md:grid-rows-[30%_1fr]">
