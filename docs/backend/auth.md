@@ -1,4 +1,4 @@
-## /auth
+# /auth
 
 <details>
   <summary>/register</summary>
@@ -16,7 +16,27 @@
 **Response:**
 ```json
 {
-  'username": "UserName",
+  "username": "UserName",
+  "email": "example@example.com"
+}
+```
+</details>
+
+<details>
+  <summary>/register</summary>
+
+**Request:**
+
+```json
+{
+  "token": '111111'
+}
+```
+
+**Response:**
+```json
+{
+  "username": "UserName",
   "email": "example@example.com"
 }
 ```

@@ -1,19 +1,16 @@
-import jwt, { TokenExpiredError } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { Response } from "express";
+import { User } from "../models/userModels"
 
-//if (!process.env.JWT_SECRET) throw new Error("No JWT Secret");
+interface UserProps {
+    id: User['id'];
+    username: User['username'];
+}
 
-
-export const generateTokenAndSetCookie = (res: Response, userId:number) => {
-    const token = jwt.sign({ userId }, process.env.JWT_SECRET as string, {
+export const generateToken = (user: UserProps) => {
+    const token = jwt.sign({ user }, process.env.JWT_SECRET as string, {
         expiresIn: '1d'
     });
 
-    res.cookie('jwtToken', token, {
-        httpOnly: true, // XSS protection
-        secure: process.env.NODE_ENV === 'production', // only use HTTPS in prod
-        sameSite: 'strict', // CSRF protection
-        maxAge: 1 * 60 * 60 * 100 // 1 day
-    });
-
+    return token;
 }

@@ -1,42 +1,120 @@
 import { Request, Response } from "express";
-import bcrypt from 'bcryptjs'
+import bcrypt from "bcryptjs";
 import { isValidEmail, isValidUsername } from "../utils/validations";
-import { createUser, getUserByValue } from "../models/userModels";
-import { generateVerificationToken } from "../utils/generateVerificationToken";
-import { generateTokenAndSetCookie } from "../utils/jwtAuthentication";
+import {
+  checkEmailExists,
+  checkUsenameExists,
+  createUser,
+  getUserByValue,
+} from "../models/userModels";
+import { generateverification_token } from "../utils/generateverification_token";
+import { generateToken } from "../utils/jwtAuthentication";
 import { sendEmailVerification } from "../utils/email";
 
-export const login = (req: Request, res: Response) => {
-	res.status(200).json({ message: "Login successful" });
+export const login = async (req: Request, res: Response): Promise<any> => {
+  const { username, password, isApp } = req.body;
+
+  if (!username || !password)
+    return res
+      .status(400)
+      .json({ success: false, message: "Provide all fields" });
+  if (!isValidUsername(username))
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid Username" });
+
+  const user = await getUserByValue("username", username, [
+    "id",
+    "password_hash",
+    "username",
+    "is_verified",
+  ]);
+
+  if (!user || !user?.password_hash || !user.username || !user.id)
+    return res.status(400).json({ success: false, message: "No such user" });
+
+  if (await bcrypt.compare(password, user.password_hash) {
+    //if (!user.is_verified) return res.status(300).json({ success: false, message: 'Verify Email first', route: '/verify-email' });
+
+    const token = generateToken({ id: user.id, username: user.username });
+
+    if (isApp) {
+      res.status(200).json({ success: true, token });
+    } else {
+      res.cookie("jwtToken", token, {
+        httpOnly: true,
+        sameSite: true,
+      });
+      res.status(201).json({ success: true });
+    }
+
+    console.log("Login success");
+  }
 };
 
 export const register = async (req: Request, res: Response): Promise<any> => {
-	const { username, email, password } = req.body;
+  const { username, email, password, isApp } = req.body;
 
-	if (!username || !email || !password) return (res.status(400).json({ success: false, message: 'Provide all fields' }));
-	if (!isValidUsername(username)) return res.status(400).json({ success: false, message: 'Invalid Username' });
-	if (!isValidEmail(email)) return res.status(400).json({ sucess: false, message: 'Invalid Email' });
-	
-	try {
-		const hashedPassword = await bcrypt.hash(password, 10);
-		const verificationToken = generateVerificationToken();
-		const user = await createUser(
-			username,
-			email,
-			hashedPassword,
-			verificationToken,
-			new Date(Date.now() + 60 * 60 * 1000) // 1 hour
-		);
+  if (!username || !email || !password)
+    return res
+      .status(400)
+      .json({ success: false, message: "Provide all fields" });
+  if (!isValidUsername(username))
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid Username" });
+  if (!isValidEmail(email))
+    return res.status(400).json({ success: false, message: "Invalid Email" });
 
-		const userID = await getUserByValue('username', user.username, ['id'])
-		if (!userID || userID.id) return res.status(500).json({ success: false, message: 'Internal DB error' });
-		generateTokenAndSetCookie(res, userID?.id || NaN);
-		
-		res.status(201).json({ success: true, data: { username: user.username, email: user.email } });
+  if (await checkUsenameExists(username))
+    return res
+      .status(400)
+      .json({ success: false, message: "Username Not Available" });
+  if (await checkEmailExists(email))
+    return res
+      .status(400)
+      .json({ success: false, message: "Email Already Exists" });
 
-		sendEmailVerification(user.email, user.username, user.verificationToken);
-	} catch (error) {
-		return res.status(500).json({ success: false, message: 'Error with password' });
-	}
-	
+  try {
+    const password_hashcrypt.hash(password, 10);
+    const verification_token = generateverification_token();
+    const user = await createUser(
+      username,
+      email,
+      password_hash,
+      verification_token,
+      new Date(Date.now() + 60 * 60 * 1000) // 1 hour
+    );
+
+    const token = generateToken({ id: user.id, username: user.username });
+
+    if (isApp) {
+      res.status(201).json({
+        success: true,
+        data: { username: user.username, email: user.email },
+        token,
+      });
+    } else {
+      res.cookie("jwtToken", token, {
+        httpOnly: true,
+        sameSite: true,
+      });
+      res.status(201).json({
+        success: true,
+        data: { username: user.username, email: user.email },
+      });
+    }
+    sendEmailVerification(user.email, user.username, user.verification_token);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+export const verifyEmail = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  const { token } = req.body;
 };

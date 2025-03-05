@@ -1,27 +1,32 @@
+version: "3.8"
+
 services:
   db:
-    image: postgres:16
+    build: ./db  # ✅ Now using custom Dockerfile in db directory
     container_name: postgres_db
     restart: always
-    environment:
-      POSTGRES_USER: chessuser
-      POSTGRES_PASSWORD: chesspassword
-      POSTGRES_DB: chessapp
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-      - ./db/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U chessuser -d chessapp"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   api:
     build: ./rest-api
     container_name: chess_api
     restart: always
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       DATABASE_URL: postgres://chessuser:chesspassword@db:5432/chessapp
       NODE_ENV: production
+    env_file:
+      - .env
     expose:
       - "5000"
 

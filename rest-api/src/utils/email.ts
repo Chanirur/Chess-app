@@ -6,8 +6,8 @@ const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
   port: 465,
   auth: {
-    user: ,
-    pass: ''
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASSWORD
   }
 });
 
@@ -17,9 +17,12 @@ export const sendEmailVerification = async (
   VerificationCode: string
 ) => {
   try {
-    const templatePath = path.resolve(__dirname, "../templates/emailVerification.html");;
+    const templatePath = path.resolve(__dirname, "../templates/emailVerification.html");
     let htmlTemplate = await fs.readFile(templatePath, "utf8");
-    const emailContent = htmlTemplate.replace('{{username}}', username).replace('{{VerificationCode}}', VerificationCode);
+
+    const emailContent = htmlTemplate
+      .replace(/{{username}}/g, username)
+      .replace(/{{VerificationCode}}/g, VerificationCode);
 
     await transporter.sendMail({
       from: '"Your App" <mail.64squares@gmail.com>',
