@@ -7,7 +7,7 @@ import {
   createUser,
   getUserByValue,
 } from "../models/userModels";
-import { generateverification_token } from "../utils/generateverification_token";
+import { generateverification_token } from "../utils/generateVerificationToken";
 import { generateToken } from "../utils/jwtAuthentication";
 import { sendEmailVerification } from "../utils/email";
 
@@ -33,7 +33,7 @@ export const login = async (req: Request, res: Response): Promise<any> => {
   if (!user || !user?.password_hash || !user.username || !user.id)
     return res.status(400).json({ success: false, message: "No such user" });
 
-  if (await bcrypt.compare(password, user.password_hash) {
+  if (await bcrypt.compare(password, user.password_hash)) {
     //if (!user.is_verified) return res.status(300).json({ success: false, message: 'Verify Email first', route: '/verify-email' });
 
     const token = generateToken({ id: user.id, username: user.username });
@@ -76,7 +76,7 @@ export const register = async (req: Request, res: Response): Promise<any> => {
       .json({ success: false, message: "Email Already Exists" });
 
   try {
-    const password_hashcrypt.hash(password, 10);
+    const password_hash = await bcrypt.hash(password, 10);
     const verification_token = generateverification_token();
     const user = await createUser(
       username,
