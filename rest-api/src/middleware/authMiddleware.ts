@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { checkUserExistsFromIdAndUsername } from "../models/userModels";
+import { checkUserExistsFromIdAndUsername } from "../models/userModel";
 
 interface DecodedToken {
     id: string;
@@ -15,7 +15,7 @@ declare global {
     }
 }
 
-export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+export const authMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     const token = req.cookies?.jwtToken || req.headers.authorization?.split(" ")[1];
 
     if (!token) {
