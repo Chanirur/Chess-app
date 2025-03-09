@@ -7,6 +7,7 @@ import { RegisterForm, RegisterSwitcher } from "@/app/ui/auth/RegisterForm";
 import { ResetPasswordForm, ResetPasswordSwitcher } from "@/app/ui/auth/ResetPassword";
 import { motion } from "framer-motion";
 import { EmailVerificationForm } from "../ui/auth/EmailVerification";
+import { useRouter } from "next/navigation";
 
 
 export default function AuthScreen() {
@@ -18,6 +19,12 @@ export default function AuthScreen() {
 
 	const [mode, setMode] = useState<'login' | 'register' | 'resetPassword' | 'emailVerification'>('login');
 	const [user, setUser] = useState<User | null>(null);
+
+	const router = useRouter();
+
+	const redirectTodashboard = () => {
+		router.push('/dashboard');
+	};
 
 	return (
 		<main className="flex absolute items-center justify-center w-[100vw] h-[100vh]">
@@ -32,12 +39,12 @@ export default function AuthScreen() {
 					className="-z-10 rounded-[50px] hidden md:block"
 				/>
 
-				<motion.div id="mainForm" className={`relative md:absolute w-[100%] ${mode === 'emailVerification' ? 'md:w-full' : 'md:w-[50%]'} h-[70vh] md:h-full rounded-[50px] bg-[linear-gradient(135deg,#00A000FF,#D0FA77e6)] z-40 flex flex-col items-center justify-center`}
+				<motion.div id="mainForm" className={`relative md:absolute w-[100%] ${mode === 'emailVerification' ? 'md:w-full' : 'md:w-[50%]'} h-[70vh] md:h-full rounded-[50px] bg-[linear-gradient(135deg,#00A000FF,#D0FA77e6)] z-40 flex flex-col items-center justify-center overflow-auto`}
 					animate={{ x: mode === 'login' || mode === 'emailVerification' ? "0%" : "100%" }}
 					transition={{ duration: 0.5 }}>
 					<div className="w-[60%] h-full grid justify-center md:grid-rows-[30%_1fr]">
 						{mode === 'login'
-							? (<LoginForm setMode={setMode} />)
+							? (<LoginForm setMode={setMode} redirectTodashboard={redirectTodashboard} />)
 							: mode === 'register'
 								? (<RegisterForm setMode={setMode} setUser={setUser} />)
 								: mode === 'resetPassword'

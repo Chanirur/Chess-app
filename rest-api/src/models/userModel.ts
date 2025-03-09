@@ -26,9 +26,8 @@ export async function getUserByValue<T extends keyof User>(
   try {
     const result = await pool.query(query, values);
     return result.rows[0] || null; // Return first user found
-  } catch (err) {
-    console.error("Database error:", err);
-    throw err;
+  } catch (error) {
+    throw new Error('DB Error');
   }
 }
 
@@ -52,7 +51,7 @@ export const createUser = async (
     const result = await pool.query(query, values);
     return result.rows[0];
   } catch (err) {
-    console.error("Database Error", err);
+    throw new Error('DB Error');
   }
 };
 
@@ -67,8 +66,8 @@ export const checkUsenameExists = async (username: User["username"]) => {
     } else {
       return false;
     }
-  } catch (err) {
-    console.error("Database Error", err);
+  } catch (error) {
+    throw new Error('DB Error');
   }
 };
 
@@ -83,8 +82,8 @@ export const checkEmailExists = async (email: User["email"]) => {
     } else {
       return false;
     }
-  } catch (err) {
-    console.error("Database Error", err);
+  } catch (error) {
+    throw new Error('DB Error');
   }
 };
 
@@ -99,7 +98,32 @@ export const checkUserExistsFromIdAndUsername = async (
   try {
     const result = await pool.query(query, values);
     return result.rows[0].user_exists;
-  } catch (err) {
-    console.error("Database Error", err);
+  } catch (error) {
+    throw new Error('DB Error');
   }
 };
+
+
+export const verifyUser = async (id: User["id"]) => {
+  const query = 'UPDATE users SET is_verified = true, verification_token = null, verification_expiry = null WHERE id = $1';
+  const values = [id];
+  
+  try {
+    await pool.query(query, values);
+    return;
+  } catch (error) {
+    throw new Error('DB Error');
+  }
+}
+
+export const updatePassword = async (id: User['id'], password: User['password_hash']) => {
+  const query = 'UPDATE users SET password_hash = $1 WHERE id = $2';
+  const values = [password, id];
+
+  try {
+    await pool.query(query, values);
+    return
+  } catch (error) {
+    throw new Error('DB Error');
+  }
+}

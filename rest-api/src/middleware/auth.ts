@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { checkUserExistsFromIdAndUsername } from "../models/userModels";
+import { checkUserExistsFromIdAndUsername } from "../models/userModel";
 
 interface DecodedToken {
     id: string;

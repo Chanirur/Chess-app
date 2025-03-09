@@ -2,6 +2,7 @@
 
 import { montserrat, poppins } from "@/app/ui/fonts";
 import React, { useState } from "react";
+import { isValidUsername, isValidEmail } from '@/app/utils/validations'
 
 interface Props {
 	setMode: React.Dispatch<React.SetStateAction<"login" | "register" | "resetPassword" | "emailVerification">>
@@ -18,6 +19,7 @@ export const RegisterForm: React.FC<Props> = ({setMode, setUser}) => {
 
 	const [showPassword, setShowPassword] = useState<boolean>(false);
 	const [formData, setFormData] = useState<dataProps>({ username: '', password: '', email: '' });
+	const [error, setError] = useState<string>('');
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setFormData({
@@ -30,17 +32,35 @@ export const RegisterForm: React.FC<Props> = ({setMode, setUser}) => {
         setShowPassword((prev) => !prev)
     }
 
+	const checkForm = () => {
+		if (!isValidUsername(formData.username)) {
+			setError('Username not valid');
+			return false;
+		} else if (formData.password === '') {
+			setError('Password cannot be empty');
+			return false;
+		} else if (!isValidEmail(formData.email)) {
+			setError('Email not valid');
+			return false;
+		}
+		return true
+	}
+
 	const registerSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		const response = await fetch('api/auth/register', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(formData)
-		});
-		const result = await response.json();
-		if (response.status === 201) {
-			setUser({ username: result.username, email: result.email });
-			setMode('emailVerification');
+		if (checkForm() === true) {
+			const response = await fetch('api/auth/register', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(formData)
+			});
+			const result = await response.json();
+			if (result.success === true) {
+				setUser({ username: result.data.username, email: result.data.email });
+				setMode('emailVerification');
+			} else {
+				console.log(result);
+			}
 		}
 	}
 
@@ -50,7 +70,7 @@ export const RegisterForm: React.FC<Props> = ({setMode, setUser}) => {
 			<form id="registerForm" onSubmit={(e) => registerSubmit(e)} className={`${poppins.className} flex flex-col gap-[5vh] items-start`}>
 				<div className="formControl block" id="usernameField">
 					<label htmlFor="username" className="text-sm font-medium text-[#e5e5e5]">Username</label>
-					<input type="text" name="username" id="username" onChange={handleChange} className="w-full px-4 py-2 border rounded-lg shadow-sm border-[#e6e6e6] ring-[#e6e6e6] bg-[#e6e6e640] focus:outline-none ring-2 focus:ring-green-400 focus:border-green-400 focus:bg-[#33333340]" />
+					<input type="text" name="username" id="username" autoFocus onChange={handleChange} className="w-full px-4 py-2 border rounded-lg shadow-sm border-[#e6e6e6] ring-[#e6e6e6] bg-[#e6e6e640] focus:outline-none ring-2 focus:ring-green-400 focus:border-green-400 focus:bg-[#33333340]" />
 				</div>
 				<div className="formControl block" id="passwordField">
 					<label htmlFor="password" className="text-sm font-medium text-[#e5e5e5] w-full">Password</label>
@@ -65,10 +85,14 @@ export const RegisterForm: React.FC<Props> = ({setMode, setUser}) => {
 					<label htmlFor="email" className="text-sm font-medium text-[#e5e5e5]">Email</label>
 					<input type="email" name="email" id="email" onChange={handleChange} className="w-full px-4 py-2 border rounded-lg shadow-sm border-[#e6e6e6] ring-[#e6e6e6] bg-[#e6e6e640] focus:outline-none ring-2 focus:ring-green-400 focus:border-green-400 focus:bg-[#33333340]" />
 				</div>
+				<div id="errorMessage" className={`${error ? 'visible' : 'hidden'} bg-red-600 w-full border-red-600 opacity-65 border-[2px] rounded-md p-[3px] text-center`}>
+					{error}
+				</div>
 				<div className="formControl block" id="submitBtn">
 					<button type="submit" id="submit" className="w-full px-4 py-2 border rounded-lg shadow-sm border-[#e6e6e6] ring-[#e6e6e6] bg-[#e6e6e640] ring-2 hover:bg-[#33333340] hover:ring-green-400 hover:border-green-400">Register</button>
 				</div>
 			</form>
+			
 		</>
 	)
 }

@@ -11,10 +11,11 @@ export const EmailVerificationForm: React.FC<Props> = ({ email }) => {
 
 	const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
 
-	const checkComplete = () => {
+	const checkComplete = async () => {
 		const otp = inputsRef.current.map((input) => input?.value).join("");
 		if (otp.length === length) {
-			console.log('Yet to implement')
+			const result = await fetch('/api/auth/veriy-email');
+			console.log(await result.json())
 		}
 	};
 
@@ -44,7 +45,7 @@ export const EmailVerificationForm: React.FC<Props> = ({ email }) => {
 			<h2 className={`${montserrat.className} text-[40px] flex items-center justify-center`}>Email Verification</h2>
 			<div className={`${poppins.className} flex flex-col gap-[5vh] items-center content-start justify-center text-center`}>
 				<div className={`${poppins.className} text-[25px]`}>
-					{ email ? {email} : 'Please Refresh' } 
+					{ email ? email : 'Please Refresh' } 
 				</div>
 				<div className="w-full md:w-auto flex flex-row gap-[1vw]">
 					{Array.from({ length }).map((_, i) => (

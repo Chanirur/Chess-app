@@ -1,8 +1,6 @@
-version: "3.8"
-
 services:
   db:
-    build: ./db  # ✅ Now using custom Dockerfile in db directory
+    build: ./db
     container_name: postgres_db
     restart: always
     ports:
