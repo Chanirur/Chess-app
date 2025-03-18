@@ -6,8 +6,8 @@ import { LoginForm, LoginSwitcher } from "@/app/ui/auth/LoginForm";
 import { RegisterForm, RegisterSwitcher } from "@/app/ui/auth/RegisterForm";
 import { ResetPasswordForm, ResetPasswordSwitcher } from "@/app/ui/auth/ResetPassword";
 import { motion } from "framer-motion";
-import { EmailVerificationForm } from "../ui/auth/EmailVerification";
 import { useRouter } from "next/navigation";
+import { EmailVerificationForm } from "../ui/auth/EmailVerification";
 
 
 export default function AuthScreen() {

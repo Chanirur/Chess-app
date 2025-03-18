@@ -8,7 +8,7 @@ interface UserProps {
 }
 
 export const generateAuthenticationToken = (user: UserProps) => {
-    const token = jwt.sign({ user }, process.env.JWT_SECRET as string, {
+    const token = jwt.sign(user, process.env.JWT_SECRET as string, {
         expiresIn: '1h'
     });
 
@@ -17,6 +17,14 @@ export const generateAuthenticationToken = (user: UserProps) => {
 
 export const generatePasswordResetToken = (user: UserProps) => {
     const token = jwt.sign({ user }, process.env.JWT_PASSWORD_RESET_SECRET as string, {
+        expiresIn: '15m'
+    });
+
+    return token;
+}
+
+export const generateEmailVerifictionToken = (user: UserProps) => {
+    const token = jwt.sign({ user }, process.env.JWT_EMAIL_VERIFICATION_SECRET as string, {
         expiresIn: '15m'
     });
 

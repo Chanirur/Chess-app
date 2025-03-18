@@ -7,8 +7,6 @@ export interface User {
   password_hash: string;
   created_at: Date;
   is_verified: boolean;
-  verification_token: string | null;
-  verification_expiry: Date;
 }
 
 const tableName = "users";
@@ -34,17 +32,13 @@ export async function getUserByValue<T extends keyof User>(
 export const createUser = async (
   username: User["username"],
   email: User["email"],
-  password_hash: User["password_hash"],
-  verification_token: User["verification_token"],
-  verification_expiry: User["verification_expiry"]
+  password_hash: User["password_hash"]
 ) => {
-  const query = `INSERT INTO ${tableName} (username, email, password_hash, verification_token, verification_expiry) VALUES ($1, $2, $3, $4, $5) RETURNING *`;
+  const query = `INSERT INTO ${tableName} (username, email, password_hash) VALUES ($1, $2, $3) RETURNING *`;
   const values = [
     username,
     email,
     password_hash,
-    verification_token,
-    verification_expiry,
   ];
 
   try {
@@ -105,7 +99,7 @@ export const checkUserExistsFromIdAndUsername = async (
 
 
 export const verifyUser = async (id: User["id"]) => {
-  const query = 'UPDATE users SET is_verified = true, verification_token = null, verification_expiry = null WHERE id = $1';
+  const query = 'UPDATE users SET is_verified = true WHERE id = $1';
   const values = [id];
   
   try {

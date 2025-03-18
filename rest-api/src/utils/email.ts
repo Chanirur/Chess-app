@@ -11,18 +11,20 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-export const sendEmailVerification = async (
+export const sendEmailVerificationEmail = async (
   to: string,
   username: string,
-  VerificationCode: string
+  token: string
 ) => {
   try {
+    const link = `${process.env.ROOT_URL}/emailVerification/${token}`;
+
     const templatePath = path.resolve(__dirname, "../templates/emailVerification.html");
     let htmlTemplate = await fs.readFile(templatePath, "utf8");
 
     const emailContent = htmlTemplate
       .replace(/{{username}}/g, username)
-      .replace(/{{VerificationCode}}/g, VerificationCode);
+      .replace(/{{link}}/g, link);
 
     await transporter.sendMail({
       from: '"64 Squares" <mail.64squares@gmail.com>',
@@ -39,11 +41,13 @@ export const sendEmailVerification = async (
 export const sendResetPasswordEmail = async (
   to: string,
   username: string,
-  link: string
+  token: string
 ) => {
   try {
     const templatePath = path.resolve(__dirname, "../templates/resetPassword.html")
     const htmlTemplate = await fs.readFile(templatePath, 'utf8')
+
+    const link = `${process.env.ROOT_URL}/resetPassword/${token}`
 
     const emailContent = htmlTemplate
       .replace(/{{username}/g, username)
