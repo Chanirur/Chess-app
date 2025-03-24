@@ -1,0 +1,32 @@
+.square {
+  box-sizing: border-box;
+  padding: 5px;
+  display: flex;
+  justify-items: center;
+  align-items: center;
+  flex: none;
+}
+
+.square.light {
+    background-color: burlywood;
+}
+
+.square.dark {
+    background-color: chocolate;
+}
+
+.square.highlight {
+    background-color: rgba(0, 255, 0, 0.3);
+}
+
+.rank {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+
+.board {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+}

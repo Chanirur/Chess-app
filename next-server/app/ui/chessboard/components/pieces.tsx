@@ -4,18 +4,15 @@ import { ColorType, PieceType } from "@/models";
 interface Props {
 	type: PieceType;
 	color: ColorType;
-	width: number
 }
 
-const Piece: React.FC<Props> = ({ type, color, width }) => {
+const Piece: React.FC<Props> = ({ type, color}) => {
 	return (
 		<div
-			className={`${type}${color}`}
+			className={`${type}${color} h-full w-full align-center`}
 			style={{
-				height: `${width}px`,
-  				width: `${width}px`,
   				backgroundImage: `url('/pieces/${type}${color}.svg')`,
-  				backgroundSize: 'cover',
+				backgroundSize: 'cover'
 			}}></div>
   )
 };

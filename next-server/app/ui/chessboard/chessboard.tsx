@@ -3,7 +3,7 @@
 import { SquareObjType } from '@/models';
 import Square from './components/square';
 
-import './chessboard.module.css';
+import './chessboard.css';
 
 
 interface Props {
@@ -18,9 +18,9 @@ const Chessboard: React.FC<Props> = ({ board, validMoves, handleClick }) => {
   const RankMapping = [8, 7, 6, 5, 4, 3, 2, 1];
 
     return (
-      <div className="chessboard">
+      <div className="chessboard w-full h-full">
       {board.map((rank, rankIndex) => (
-        <div key={rankIndex} className="rank">
+        <div key={rankIndex} className="rank w-full h-[12.5%] flex">
           {rank.map((square, squareIndex) => {
             const isLightSquare = (rankIndex + squareIndex) % 2 === 0;
             const squareString = `${fileMapping[squareIndex]}${RankMapping[rankIndex]}`;

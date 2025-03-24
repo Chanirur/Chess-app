@@ -12,13 +12,13 @@ interface Props {
 const Square: React.FC<Props> = ({ square, className, onClick, squareString }) => {
   if (square) {
     return (
-      <div className={`square ${className}`} onClick={() => onClick(squareString)}>
-        <Piece color={square.color} type={square.type} width={40} />
+      <div className={`square ${className} w-[12.5%] h-full`} onClick={() => onClick(squareString)}>
+        <Piece color={square.color} type={square.type} />
       </div>
     );
   } else {
     return (
-      <div className={`square ${className}`} onClick={() => onClick(squareString)}></div>
+      <div className={`square ${className} w-[12.5%] h-full`} onClick={() => onClick(squareString)}></div>
 	  )
   }
 };

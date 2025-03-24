@@ -11,7 +11,6 @@ import {
   User,
   verifyUser,
 } from "../models/userModel";
-import { generateVerificationToken } from "../utils/generateVerificationToken";
 import {
   generateAuthenticationToken,
   generateEmailVerifictionToken,
@@ -39,8 +38,11 @@ export const login = async (req: Request, res: Response): Promise<any> => {
     "is_verified",
   ]);
 
-  if (!user || !user?.password_hash || !user.username || !user.id)
+  if (!user || !user?.password_hash || !user.username || !user.id || !user.is_verified)
     return res.status(400).json({ success: false, message: "No such user" });
+
+  if (!user.is_verified)
+    return res.status(400).json({ success: false, message: "Email not verified" });
 
   if (await bcrypt.compare(password, user.password_hash)) {
     const token = generateAuthenticationToken({
@@ -163,16 +165,34 @@ export const sendEmailVerification = async (
   res.status(200).json({ success: true, message: "Email Sent" });
 }
 
-export const verifyEmail = async (
-  req: Request,
-  res: Response
-): Promise<any> => {
+export const verifyEmail = async (req: Request, res: Response): Promise<any> => {
   const { token } = req.body;
-  
+
   if (!token)
     return res.status(400).json({ success: false, message: "No token" });
-  
 
+  try {
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_EMAIL_VERIFICATION_SECRET as string
+    ) as { user: { id: number; username: string } };
+
+    const userExists = await checkUserExistsFromIdAndUsername(
+      decoded.user.id,
+      decoded.user.username
+    );
+
+    if (!userExists)
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid or expired token" });
+
+    await verifyUser(decoded.user.id);
+
+    res.status(200).json({ success: true, message: "Email verified successfully" });
+  } catch (error) {
+    res.status(400).json({ success: false, message: "Invalid or expired token" });
+  }
 };
 
 export const sendResetPassword = async (
