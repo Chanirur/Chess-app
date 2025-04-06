@@ -2,13 +2,38 @@
 
 import Board from "@/app/ui/chessboard/game"
 import { Chess } from "chess.js";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const Page = () => {
 
     const [position, setPosition] = useState<Chess>(new Chess());
     const [moves, setMoves] = useState<(string | null)[][]>([['e4', 'e5'], ['Nf3', 'Nc6']]);
     const [yourTime, setYourTime] = useState<number>(NaN);
+    const [socket, setSocket] = useState<WebSocket | null>(null);
+    
+    useEffect(() => {
+        const ws = new WebSocket('ws://redesigned-happiness-x59rvgxwp9qw3v9v6-8080.app.github.dev/')
+        
+        ws.onopen = () => {
+            console.log('WebSocket connection established');
+        };
+
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            console.log('Received data:', data);
+        };
+
+        ws.onclose = () => {
+            console.log('WS closed');
+        }
+
+        ws.onerror = (error) => {
+            console.error('WebSocket error:', error);
+        }
+        setSocket(ws);
+        return () => ws.close();
+    }, [])
+    
 
     return (
         <>
