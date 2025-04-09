@@ -12,7 +12,7 @@ const Page = () => {
     const [socket, setSocket] = useState<WebSocket | null>(null);
     
     useEffect(() => {
-        const ws = new WebSocket('ws://redesigned-happiness-x59rvgxwp9qw3v9v6-8080.app.github.dev/')
+        const ws = new WebSocket('ws://localhost:8080/')
         
         ws.onopen = () => {
             console.log('WebSocket connection established');

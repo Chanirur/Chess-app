@@ -2,7 +2,7 @@ import express from 'express';
 import { WebSocketServer, WebSocket } from 'ws';
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8080;
 
 function onSocketPreError(e: Error) {
     console.log(e);

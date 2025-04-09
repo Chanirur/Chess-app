@@ -1,8 +1,8 @@
-next-server/node_modules
+next-server/node_modules/
 next-server/.env
 
-rest-api/node_modules
+rest-api/node_modules/
 .env
 
-ws-server/node_modules
+ws-server/node_modules/
 ws-server/.env

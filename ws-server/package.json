@@ -6,7 +6,7 @@
   "scripts": {
     "ts": "tsc -p .",
     "start": "npm run ts && npm run start:server",
-    "start:server": "node src/server.js",
+    "start:server": "node dist/server.js",
     "dev": "tsc-watch -p tsconfig.json --onSuccess \"npm run start:server\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
