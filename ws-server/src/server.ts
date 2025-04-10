@@ -4,6 +4,18 @@ import { WebSocketServer, WebSocket } from 'ws';
 const app = express();
 const port = process.env.PORT || 8080;
 
+interface game {
+    id: string;
+    players: {
+        white: WebSocket;
+        black: WebSocket;
+    };
+    moves: string[];
+    moveNum: number;
+}
+
+let games: game[] = []
+
 function onSocketPreError(e: Error) {
     console.log(e);
 }
@@ -41,8 +53,10 @@ wss.on('connection', (ws, req) => {
 
     ws.on('message', (msg, isBinary) => {
         wss.clients.forEach((client) => {
-            client.send(msg, { binary: isBinary });
-        });
+            if (client !== ws && client.readyState === WebSocket.OPEN) {
+                client.send(msg, { binary: isBinary });
+            }
+        });        
     });
 
     ws.on('close', () => {
