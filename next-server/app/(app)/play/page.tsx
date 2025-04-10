@@ -6,13 +6,13 @@ import { useEffect, useState } from "react";
 
 const Page = () => {
 
-    const [position, setPosition] = useState<Chess>(new Chess());
+    const [position, setPosition] = useState<string>('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1');
     const [moves, setMoves] = useState<(string | null)[][]>([['e4', 'e5'], ['Nf3', 'Nc6']]);
     const [yourTime, setYourTime] = useState<number>(NaN);
     const [socket, setSocket] = useState<WebSocket | null>(null);
     
     useEffect(() => {
-        const ws = new WebSocket('ws://redesigned-happiness-x59rvgxwp9qw3v9v6-8080.app.github.dev/')
+        const ws = new WebSocket('ws://localhost:8080/')
         
         ws.onopen = () => {
             console.log('WebSocket connection established');
@@ -20,7 +20,18 @@ const Page = () => {
 
         ws.onmessage = (event) => {
             const data = JSON.parse(event.data);
-            console.log('Received data:', data);
+            console.log(data);
+            if (data.type === 'move') {
+                const move = data.move;
+                setMoves((prevMoves) => [...prevMoves, [move.from, move.to]]);
+                
+                const cloneGame = new Chess(position); // Clone chess instance
+                      cloneGame.move({ from: move.from, to: move.to });
+                  
+                      setPosition(() => cloneGame.fen()); // Update board
+            
+            }
+            console.log(position)
         };
 
         ws.onclose = () => {
@@ -33,6 +44,24 @@ const Page = () => {
         setSocket(ws);
         return () => ws.close();
     }, [])
+
+    const handleMove = (selectedSquare: string, square: string) => {
+        if (socket) {
+
+            const cloneGame = new Chess(position); // Clone chess instance
+                      cloneGame.move({ from: selectedSquare, to: square });
+                  
+                      setPosition(() => cloneGame.fen()); // Update board
+            
+            socket.send(JSON.stringify({
+                type: 'move',
+                move: {
+                    from: selectedSquare,
+                    to: square
+                }
+            }))
+        }
+    }
     
 
     return (
@@ -45,11 +74,11 @@ const Page = () => {
                         height: "min(80vw, 80vh)"
                     }}
                 >
-                    <Board game={position} setGame={setPosition} />
+                    <Board position={position} onMove={handleMove} />
                 </div>
                 <div
                     id="info-panel"
-                    className="h-[50vh] w-[30vw] flex flex-col items-start flex-shrink-0"
+                    className="h-[50vh] w-[30vw] flex flex-col items-start flex-shrink-0 hidden"
                 >
                     <div id="opponentTimer" className="w-[50%] h-[20%] bg-blue-500 flex items-center justify-center text-[2rem]">
                         <span id="h">
