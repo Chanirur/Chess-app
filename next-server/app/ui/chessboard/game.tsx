@@ -5,15 +5,17 @@ import { Chess, Square } from "chess.js";
 import Chessboard from "@/app/ui/chessboard/chessboard";
 
 interface Props {
-  game: Chess;
-	setGame: (game: Chess) => void;
-	onMove?: (move: string) => void;
+  position: string;
+	setPosition?: (game: string) => void;
+  onMove?: (selectedSquare: string, square: string) => void;
 	onClick?: (square: string) => void;
 }
 
-const Board: React.FC<Props> = ({ game, setGame }) => {
+const Board: React.FC<Props> = ({ position, onMove }) => {
     const [selectedSquare, setSelectedSquare] = useState<string | null>(null);
     const [validMoves, setValidMoves] = useState<string[]>([]);
+
+    const game = new Chess(position);
 
     const handleSquareClick = (square: string) => {
       if (!selectedSquare) {
@@ -27,10 +29,9 @@ const Board: React.FC<Props> = ({ game, setGame }) => {
       } else {
         // Moving a piece
         if (validMoves.includes(square)) {
-          const cloneGame = new Chess(game.fen()); // Clone chess instance
-          cloneGame.move({ from: selectedSquare, to: square });
-      
-          setGame(cloneGame); // Update board
+          if (onMove) {
+            onMove(selectedSquare, square);
+          }
         } else if (game.get(square as Square)) {
           const piece = game.get(square as Square);
           if (!piece) {
